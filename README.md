@@ -10,9 +10,9 @@
       String topic = "topic";
       List<LogItem> logItems = new ArrayList<LogItem>();
       LogItem logItem = new LogItem((int) (new Date().getTime() / 1000));
-      logItem.PushBack("userid", i + "");
-      logItem.PushBack("system", "android_" + i);
-      logItem.PushBack("message", "it's a test message_" + i);
+      logItem.PushBack("userid");
+      logItem.PushBack("system", "android");
+      logItem.PushBack("message", "it's a test message");
       logItems.add(logItem);
       PutLogsRequest request = new PutLogsRequest(project, logStore, topic, logItems);
       try {
