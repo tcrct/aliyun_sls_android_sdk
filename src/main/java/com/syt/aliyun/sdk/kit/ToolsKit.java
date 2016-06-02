@@ -13,20 +13,12 @@ import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.regex.Pattern;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializeConfig;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.serializer.SimpleDateFormatSerializer;
 import com.syt.aliyun.sdk.validator.InetAddressValidator;
 
 public class ToolsKit {
 
 	private static SimpleDateFormat rfc822DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-	private static SerializeConfig jsonConfig = new SerializeConfig();
-	
-	static {
-		jsonConfig.put(Date.class, new SimpleDateFormatSerializer("yyyy-MM-dd HH:mm:ss"));
-	}
+
 
 	/***
 	 * 判断传入的对象是否为空
@@ -131,9 +123,5 @@ public class ToolsKit {
 		} else {
 			return "";
 		}
-	}
-	
-	public static String toJsonString(Object obj) {
-		return JSON.toJSONString(obj, jsonConfig, SerializerFeature.DisableCircularReferenceDetect);
 	}
 }

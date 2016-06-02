@@ -45,19 +45,4 @@ public class LogItem implements Serializable {
 	public ArrayList<LogContent> GetLogContents() {
 		return mContents;
 	}
-
-	public String ToJsonString() {
-		/*
-		JSONObject obj = new JSONObject();
-
-		obj.put("logtime", Integer.valueOf(mLogTime));
-		for (LogContent content : mContents) {
-			obj.put(content.GetKey(), content.GetValue());
-		}
-
-		return obj.toString();
-		*/
-		// TODO 自行根据JSON包进行toString()方法实现 
-		return "";
-	}
 }

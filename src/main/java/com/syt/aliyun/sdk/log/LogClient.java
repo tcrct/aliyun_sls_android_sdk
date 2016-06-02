@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,12 +22,11 @@ import java.util.zip.Deflater;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.syt.aliyun.sdk.common.Consts;
 import com.syt.aliyun.sdk.enums.HttpMethod;
 import com.syt.aliyun.sdk.exception.LogException;
 import com.syt.aliyun.sdk.kit.Base64Kit;
+import com.syt.aliyun.sdk.kit.JsonKit;
 import com.syt.aliyun.sdk.kit.ToolsKit;
 import com.syt.aliyun.sdk.log.entity.LogContent;
 import com.syt.aliyun.sdk.log.entity.LogItem;
@@ -327,26 +327,31 @@ public class LogClient {
 			String topic = request.GetTopic();
 			String source = request.GetSource();
 			List<LogItem> logItems = request.GetLogItems();
-				JSONObject jsonObj = new JSONObject();
-				if (ToolsKit.isNotEmpty(topic)) {
-					jsonObj.put("__topic__", topic);
+			
+			Map<String,Object> jsonObj = new HashMap<String,Object>();
+			if (ToolsKit.isNotEmpty(topic)) {
+				jsonObj.put("__topic__", topic);
+			}
+			if (ToolsKit.isNotEmpty(source)) {
+				jsonObj.put("__source__",source);
+			} else {
+				jsonObj.put("__source__",sourceIp);
+			}
+			List<Map<String,Object>> logsArray = new ArrayList<Map<String,Object>>();
+			for(Iterator<LogItem> it = logItems.iterator(); it.hasNext();){
+				LogItem item = it.next();
+				Map<String,Object> jsonObjInner = new HashMap<String,Object>();
+				jsonObjInner.put("__time__", item.mLogTime);
+				for (LogContent content : item.mContents) {
+					jsonObjInner.put(content.mKey, content.mValue);
 				}
-				if (ToolsKit.isNotEmpty(source)) {
-					jsonObj.put("__source__",source);
-				} else {
-					jsonObj.put("__source__",sourceIp);
-				}
-				JSONArray logsArray = new JSONArray();
-				for(Iterator<LogItem> it = logItems.iterator(); it.hasNext();){
-					LogItem item = it.next();
-					JSONObject jsonObjInner = new JSONObject();
-					jsonObjInner.put("__time__", item.mLogTime);
-					for (LogContent content : item.mContents) {
-						jsonObjInner.put(content.mKey, content.mValue);
-					}
-					logsArray.add(jsonObjInner);
-				}
-				jsonObj.put("__logs__", logsArray);
-				return jsonObj.toString().getBytes();
+				logsArray.add(jsonObjInner);
+			}
+			jsonObj.put("__logs__", logsArray);
+			
+			
+			System.out.println(JsonKit.toJson(jsonObj));
+			
+			return JsonKit.toJson(jsonObj).getBytes();
 		}
 }

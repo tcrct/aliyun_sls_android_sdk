@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.syt.aliyun.sdk.exception.LogException;
 import com.syt.aliyun.sdk.log.LogClient;
+import com.syt.aliyun.sdk.log.entity.LogContent;
 import com.syt.aliyun.sdk.log.entity.LogItem;
 import com.syt.aliyun.sdk.log.entity.PutLogsRequest;
 import com.syt.aliyun.sdk.log.entity.RequestMessage;
@@ -22,8 +23,7 @@ public class App {
 
 		// 生产环境中要改为单例的
 		LogClient client = new LogClient("http://cn-qingdao.log.aliyuncs.com", keyId, keySecret, securityToken);
-
-		for (int i = 111; i < 200; i++) {
+		for (int i = 201; i < 300; i++) {
 			String project = "project";
 			String logStore = "logstore";
 			String topic = "topic";
@@ -32,6 +32,14 @@ public class App {
 			logItem.PushBack("userid", i + "");
 			logItem.PushBack("system", "android_" + i);
 			logItem.PushBack("message", "it's a test message_" + i);
+			logItem.PushBack(new LogContent("my name","laotang"));
+			ArrayList<LogContent> contents = new ArrayList<LogContent>();
+			contents.add(new LogContent("my name","laotang"));
+			contents.add(new LogContent("my name2","laotang2"));
+			contents.add(new LogContent("my name3","laotang3"));
+			contents.add(new LogContent("my name4","laotang4"));
+			contents.add(new LogContent("my name5","laotang5"));
+			logItem.SetLogContents(contents);
 			logItems.add(logItem);
 			PutLogsRequest request = new PutLogsRequest(project, logStore, topic, logItems);
 			try {
