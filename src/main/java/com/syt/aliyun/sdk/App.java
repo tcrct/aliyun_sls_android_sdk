@@ -44,8 +44,33 @@ public class App {
 			PutLogsRequest request = new PutLogsRequest(project, logStore, topic, logItems);
 			try {
 				RequestMessage messages = client.getRequestMessage(request);
-			    //客户端自行实现的HttpClient, 必须以POST方式提交
-			    //HttpClient.body(messages.getContent()).header(messages.getHeaders()).url(endPointUrl).post()
+			    //客户端自行实现的HttpClient, 必须以POST方式提交, 以AsyncHttpClient为例
+				/*
+				 String url = messages.getEndpoint()+messages.getResourcePath();
+                 ApiHttpClient.client.removeAllHeaders();		//先删除所有header
+                 Map<String,String> headers = messages.getHeaders();
+                 for (Iterator it = headers.entrySet().iterator(); it.hasNext(); ) {
+                     Map.Entry e = (Map.Entry) it.next();
+                     ApiHttpClient.client.addHeader(e.getKey().toString(),e.getValue().toString());
+                 }
+                 String contentType = headers.get("Content-Type");
+                 InputStreamEntity sEntity = new InputStreamEntity(messages.getContent(), messages.getContentLength());
+                 ApiHttpClient.client.post(context, url, sEntity, contentType, new AsyncHttpResponseHandler() {
+                     @Override
+                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+                     }
+
+                     @Override
+                     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                     }
+                 });
+                 */
+             } catch (LogException e) {
+                 e.printStackTrace();
+             }
+
 			} catch (LogException e) {
 				e.printStackTrace();
 			}
