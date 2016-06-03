@@ -2,6 +2,7 @@ package com.syt.aliyun.sdk.log;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -130,17 +131,7 @@ public class LogClient {
 		}
 		//压缩前的body内容大小
 		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(logBytes.length));
-		// GZIP压缩
-		ByteArrayOutputStream out = new ByteArrayOutputStream(logBytes.length);
-		Deflater compresser = new Deflater();
-		compresser.setInput(logBytes);
-		compresser.finish();
-		byte[] buf = new byte[10240];
-		while (compresser.finished() == false) {
-			int count = compresser.deflate(buf);
-			out.write(buf, 0, count);
-		}
-		logBytes = out.toByteArray();		
+		logBytes = builderGzipComperss(logBytes);		
 		String resourceUri = "/logstores/" + logStore +"/shards/lb";
 		RequestMessage message = builderRequestMessage(project, resourceUri, headParameter, logBytes);
 		return message;
@@ -354,4 +345,28 @@ public class LogClient {
 			
 			return JsonKit.toJson(jsonObj).getBytes();
 		}
+		
+		 public static byte[] builderGzipComperss(byte[] jsonByte) {
+		    	ByteArrayOutputStream out = null;
+		    	try{
+		        	out = new ByteArrayOutputStream(jsonByte.length);
+			    	Deflater compresser = new Deflater();
+					compresser.setInput(jsonByte);
+					compresser.finish();
+					byte[] buf = new byte[10240];
+					while (compresser.finished() == false) {
+						int count = compresser.deflate(buf);
+						out.write(buf, 0, count);
+					}
+					jsonByte = out.toByteArray();
+		    	} catch(Exception e){
+		    		e.printStackTrace();
+		    	} finally{
+		    		try {
+						if(ToolsKit.isNotEmpty(out)) out.close();
+					} catch (IOException e) {
+					}
+		    	}
+				return (jsonByte == null) ? null : jsonByte;
+		    }
 }
