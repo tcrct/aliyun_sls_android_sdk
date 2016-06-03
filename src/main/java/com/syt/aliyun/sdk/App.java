@@ -17,9 +17,9 @@ import com.syt.aliyun.sdk.log.entity.RequestMessage;
  */
 public class App {
 	public static void main(String[] args) {
-		String keyId = "";
-		String keySecret = "";
-		String securityToken = "";		
+		String keyId = "keyId";
+		String keySecret = "keySecret";
+		String securityToken = "securityToken";		
 
 		// 生产环境中要改为单例的
 		LogClient client = new LogClient("http://cn-qingdao.log.aliyuncs.com", keyId, keySecret, securityToken);
@@ -42,8 +42,10 @@ public class App {
 			logItem.SetLogContents(contents);
 			logItems.add(logItem);
 			PutLogsRequest request = new PutLogsRequest(project, logStore, topic, logItems);
-			try {
+			try {				
 				RequestMessage messages = client.getRequestMessage(request);
+				 String responseBody = "{\"errorCode\":\"201\", \"errorMessage\":\"AsyncHttpClient is null\"}";
+				client.checkResponse(201,responseBody);
 			    //客户端自行实现的HttpClient, 必须以POST方式提交, 以AsyncHttpClient为例
 				/*
 				 String url = messages.getEndpoint()+messages.getResourcePath();
@@ -58,7 +60,7 @@ public class App {
                  ApiHttpClient.client.post(context, url, sEntity, contentType, new AsyncHttpResponseHandler() {
                      @Override
                      public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-							client.isSubmit(statusCode, new String(responseBody));//判断是否提交成功
+							client.checkResponse(statusCode, new String(responseBody));//判断是否提交成功
                      }
 
                      @Override

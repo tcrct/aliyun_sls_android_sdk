@@ -4,7 +4,7 @@ package com.syt.aliyun.sdk.exception;
 /**
  * The excpetion is thrown if error happen.
  * 
- * @author sls_dev
+ * @author laotang
  * 
  */
 public class LogException extends Exception {
@@ -12,9 +12,7 @@ public class LogException extends Exception {
 	private static final long serialVersionUID = -4441995860203577032L;
 
 	private String errorCode;
-
-	private String requestId;
-
+	
 	/**
 	 * Construct LogException
 	 * 
@@ -22,14 +20,10 @@ public class LogException extends Exception {
 	 *            error code
 	 * @param message
 	 *            error message
-	 * @param requestId
-	 *            request id from sls server, if the error is happened in the
-	 *            client, the request id is empty
 	 */
-	public LogException(String code, String message, String requestId) {
+	public LogException(String code, String message) {
 		super(message);
 		this.errorCode = code;
-		this.requestId = requestId;
 	}
 
 	/**
@@ -41,15 +35,10 @@ public class LogException extends Exception {
 	 *            error message
 	 * @param cause
 	 *            inner exception, which cause the error
-	 * @param requestId
-	 *            request id from sls server, if the error is happened in the
-	 *            client, the request id is empty
 	 */
-	public LogException(String code, String message, Throwable cause,
-			String requestId) {
+	public LogException(String code, String message, Throwable cause) {
 		super(message, cause);
 		this.errorCode = code;
-		this.requestId = requestId;
 	}
 
 	/**
@@ -68,15 +57,5 @@ public class LogException extends Exception {
 	 */
 	public String GetErrorMessage() {
 		return super.getMessage();
-	}
-
-	/**
-	 * Get the request id
-	 * 
-	 * @return request id, if the error is happened in the client, the request
-	 *         id is empty
-	 */
-	public String GetRequestId() {
-		return this.requestId;
 	}
 }

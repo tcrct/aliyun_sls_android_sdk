@@ -22,7 +22,6 @@ import java.util.zip.Deflater;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.security.auth.login.LoginException;
 
 import com.syt.aliyun.sdk.common.Consts;
 import com.syt.aliyun.sdk.enums.HttpMethod;
@@ -103,6 +102,12 @@ public class LogClient {
 		this.securityToken = securityToken;
 	}
 
+	/**
+	 * 构建请求信息对象
+	 * @param request
+	 * @return	RequestMessage
+	 * @throws LogException
+	 */
 	public RequestMessage getRequestMessage(PutLogsRequest request) throws LogException {
 		if (ToolsKit.isEmpty(request)) throw new NullPointerException("request is null");
 		
@@ -121,14 +126,14 @@ public class LogClient {
 		
 		List<LogItem> logItems = request.GetLogItems();		
 		if (logItems.size() > Consts.CONST_MAX_PUT_LINES) {
-			throw new LogException("InvalidLogSize","logItems' length exceeds maximum limitation : " +Consts.CONST_MAX_PUT_LINES + " lines", "");
+			throw new LogException("InvalidLogSize","logItems' length exceeds maximum limitation : " +Consts.CONST_MAX_PUT_LINES + " lines");
 		}
 		
 		// 初始化header
 		Map<String, String> headParameter = builderHeadParams(project);
 		byte[] logBytes = toByteArray(request);
 		if (logBytes.length > Consts.CONST_MAX_PUT_SIZE) {
-			throw new LogException("InvalidLogSize", "logItems' size exceeds maximum limitation : " + String.valueOf(Consts.CONST_MAX_PUT_SIZE)+ " bytes", "");
+			throw new LogException("InvalidLogSize", "logItems' size exceeds maximum limitation : " + String.valueOf(Consts.CONST_MAX_PUT_SIZE)+ " bytes");
 		}
 		//压缩前的body内容大小
 		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(logBytes.length));
@@ -341,9 +346,6 @@ public class LogClient {
 			}
 			jsonObj.put("__logs__", logsArray);
 			
-			
-			System.out.println(JsonKit.toJson(jsonObj));
-			
 			return JsonKit.toJson(jsonObj).getBytes();
 		}
 		
@@ -352,7 +354,7 @@ public class LogClient {
 		 * @param jsonByte	要压缩的字符流
 		 * @return
 		 */
-		 public byte[] builderGzipComperss(byte[] jsonByte) {
+		 private byte[] builderGzipComperss(byte[] jsonByte) {
 		    	ByteArrayOutputStream out = null;
 		    	try{
 		        	out = new ByteArrayOutputStream(jsonByte.length);
@@ -383,9 +385,12 @@ public class LogClient {
 		  * @return
 		  * @throws LoginException
 		  */
-		 public boolean isSubmit(int statusCode, String responseBody) throws LoginException {
-			 if(statusCode != Consts.HTTP_SUCCESS_STATUS_CODE && ToolsKit.isNotEmpty(responseBody)) {
-				 throw new LoginException(responseBody);
+		 public boolean checkResponse(int statusCode, String responseBody) throws LogException {
+			 if(statusCode != Consts.HTTP_SUCCESS_STATUS_CODE ) {
+				 Map<String, String> map = JsonKit.toMap(responseBody);
+				 if(ToolsKit.isNotEmpty(map)){
+					 throw new LogException(map.get(Consts.RESPONSE_ERROR_CODE), map.get(Consts.RESPONSE_ERROR_MESSAGE));
+				 }
 			 }
 			 return true;
 		 }
