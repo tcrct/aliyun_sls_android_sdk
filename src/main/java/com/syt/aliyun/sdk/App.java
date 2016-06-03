@@ -67,10 +67,6 @@ public class App {
                      }
                  });
                  */
-             } catch (LogException e) {
-                 e.printStackTrace();
-             }
-
 			} catch (LogException e) {
 				e.printStackTrace();
 			}
