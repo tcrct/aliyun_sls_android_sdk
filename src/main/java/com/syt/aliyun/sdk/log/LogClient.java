@@ -22,6 +22,7 @@ import java.util.zip.Deflater;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.security.auth.login.LoginException;
 
 import com.syt.aliyun.sdk.common.Consts;
 import com.syt.aliyun.sdk.enums.HttpMethod;
@@ -243,7 +244,7 @@ public class LogClient {
 		}
 	 
 	 /**
-	  * 签名，需要引入commons-codec-1.4.jar
+	  * 签名
 	  * @param accessid				accessId
 	  * @param accesskey 			accesskey		
 	  * @param headers				request headers
@@ -292,7 +293,7 @@ public class LogClient {
 		 * @param data							需要生成签名的原字符串
 		 * @return
 		 */
-		private static String getSignature(String accesskey, String data) {
+		private String getSignature(String accesskey, String data) {
 			try {
 				byte[] keyBytes = accesskey.getBytes(Consts.UTF_8_ENCODING);
 				byte[] dataBytes = data.getBytes(Consts.UTF_8_ENCODING);
@@ -346,7 +347,12 @@ public class LogClient {
 			return JsonKit.toJson(jsonObj).getBytes();
 		}
 		
-		 public static byte[] builderGzipComperss(byte[] jsonByte) {
+		/**
+		 * 构建GZIP压缩
+		 * @param jsonByte	要压缩的字符流
+		 * @return
+		 */
+		 public byte[] builderGzipComperss(byte[] jsonByte) {
 		    	ByteArrayOutputStream out = null;
 		    	try{
 		        	out = new ByteArrayOutputStream(jsonByte.length);
@@ -368,5 +374,19 @@ public class LogClient {
 					}
 		    	}
 				return (jsonByte == null) ? null : jsonByte;
-		    }
+		   }
+		 
+		 /**
+		  * 服务器响应为200时则说明提交成功
+		  * @param statusCode					响应状态代号
+		  * @param responseBody				返回的错误信息，如果为200是，可能为空或null
+		  * @return
+		  * @throws LoginException
+		  */
+		 public boolean isSubmit(int statusCode, String responseBody) throws LoginException {
+			 if(statusCode != Consts.HTTP_SUCCESS_STATUS_CODE && ToolsKit.isNotEmpty(responseBody)) {
+				 throw new LoginException(responseBody);
+			 }
+			 return true;
+		 }
 }

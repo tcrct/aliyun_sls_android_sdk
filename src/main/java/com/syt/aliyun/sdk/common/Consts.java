@@ -33,4 +33,5 @@ public class Consts {
 	public static final String CONST_X_ACS_PREFIX = "x-acs-";
 	public static final String LINE_SEPARATOR= "\n";
 	public static final String IPV4_REGEX = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$";
+	public static final int HTTP_SUCCESS_STATUS_CODE = 200;
 }

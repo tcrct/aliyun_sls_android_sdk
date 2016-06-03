@@ -58,7 +58,7 @@ public class App {
                  ApiHttpClient.client.post(context, url, sEntity, contentType, new AsyncHttpResponseHandler() {
                      @Override
                      public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
+							client.isSubmit(statusCode, new String(responseBody));//判断是否提交成功
                      }
 
                      @Override
