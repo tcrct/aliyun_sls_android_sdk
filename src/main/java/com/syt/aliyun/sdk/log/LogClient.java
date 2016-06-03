@@ -266,6 +266,8 @@ public class LogClient {
 			builder.append(resourceUri);
 			String signature = getSignature(accesskey, builder.toString());
 			headers.put(Consts.CONST_AUTHORIZATION, Consts.CONST_HEADSIGNATURE_PREFIX + accessid + ":" + signature);
+			headers.remove(Consts.CONST_HOST); // 是否删除？
+			headers.remove(Consts.CONST_CONTENT_LENGTH); // 是否删除？
 		}
 		
 		/**

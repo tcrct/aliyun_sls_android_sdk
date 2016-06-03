@@ -97,8 +97,6 @@ public class JsonKit {
 			if(ToolsKit.isNotEmpty(valueItemArrays) && valueItemArrays.length == 2){
 				map.put(valueItemArrays[0].trim(), valueItemArrays[1]);				
 			}
-//			String key = valueItemArrays[0];
-//			map.put(key, (valueItemArrays.length == 2) ? toMap(valueItemArrays[1]) : valueItemArrays[1]) ;
 		}
 		return map;
 	}
