@@ -17,9 +17,9 @@ import com.syt.aliyun.sdk.log.entity.RequestMessage;
  */
 public class App {
 	public static void main(String[] args) {
-		String keyId = "STS.MQd1GPPQLxTEM4Gr7ZjRfXnAc";
-		String keySecret = "5H9C9JRxTRFrJcfMUoGuHyNRBQGaK2Q1jupgwAgjnpsq";
-		String securityToken = "CAES8gIIARKAAXIYW7vXgiTBmQMk0EWfYmCVC4+IoPO0TiZsggqPrkSYTXDFYe5oyXnCnG87iTS3nqO7HmF5we6vBY7Dp/L9LXw7tWYnHQ3jKt9AxVbRgtwiC4XiAJFq/jtDzVyF1WTpR1K9IvnvgCwGo4tQGg6m+AmWnmepNWLx8IocobKYp9F+Gh1TVFMuTVFkMUdQUFFMeFRFTTRHcjdaalJmWG5BYyISMzkwMTYwMTQ4OTU3NDg4MDI1KglHdWVzdFJvbGUwnc3W+tAqOgZSc2FNRDVCSgoBMRpFCgVBbGxvdxIbCgxBY3Rpb25FcXVhbHMSBkFjdGlvbhoDCgEqEh8KDlJlc291cmNlRXF1YWxzEghSZXNvdXJjZRoDCgEqShAxMTQzODU2MzMwMzQxNDQ0UgUyNjg0MloPQXNzdW1lZFJvbGVVc2VyYABqEjM5MDE2MDE0ODk1NzQ4ODAyNXIJZ3Vlc3Ryb2xleMT4+fHMioQC";
+		String keyId = "";
+		String keySecret = "";
+		String securityToken = "";		
 
 		// 生产环境中要改为单例的
 		LogClient client = new LogClient("http://cn-qingdao.log.aliyuncs.com", keyId, keySecret, securityToken);
@@ -44,8 +44,8 @@ public class App {
 			PutLogsRequest request = new PutLogsRequest(project, logStore, topic, logItems);
 			try {
 				RequestMessage messages = client.getRequestMessage(request);
-				String endpoint = messages.getEndpoint()+messages.getResourcePath();
-				System.out.println(endpoint);
+			    //客户端自行实现的HttpClient, 必须以POST方式提交
+			    //HttpClient.body(messages.getContent()).header(messages.getHeaders()).url(endPointUrl).post()
 			} catch (LogException e) {
 				e.printStackTrace();
 			}

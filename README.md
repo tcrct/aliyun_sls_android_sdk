@@ -17,9 +17,9 @@
       PutLogsRequest request = new PutLogsRequest(project, logStore, topic, logItems);
       try {
       RequestMessage messages = client.getRequestMessage(request);
-      System.out.println(messages.getEndpoint());				
+      String endpoint = messages.getEndpoint()+messages.getResourcePath();	
       //客户端自行实现的HttpClient, 必须以POST方式提交
-      //HttpClient.post(message);
+      //HttpClient.body(messages.getContent()).header(messages.getHeaders()).url(endPointUrl).post()
       } catch (LogException e) {
       	e.printStackTrace();
       }
