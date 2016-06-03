@@ -44,8 +44,6 @@ public class App {
 			PutLogsRequest request = new PutLogsRequest(project, logStore, topic, logItems);
 			try {				
 				RequestMessage messages = client.getRequestMessage(request);
-				 String responseBody = "{\"errorCode\":\"201\", \"errorMessage\":\"AsyncHttpClient is null\"}";
-				client.checkResponse(201,responseBody);
 			    //客户端自行实现的HttpClient, 必须以POST方式提交, 以AsyncHttpClient为例
 				/*
 				 String url = messages.getEndpoint()+messages.getResourcePath();
