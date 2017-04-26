@@ -1,24 +1,20 @@
 package com.syt.aliyun.sdk.kit;
 
+import com.syt.aliyun.sdk.common.Consts;
+import com.syt.aliyun.sdk.validator.InetAddressValidator;
+
+import java.io.*;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
-import java.util.SimpleTimeZone;
+import java.util.*;
 import java.util.regex.Pattern;
-
-import com.syt.aliyun.sdk.validator.InetAddressValidator;
 
 public class ToolsKit {
 
 	private static SimpleDateFormat rfc822DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-
 
 	/***
 	 * 判断传入的对象是否为空
@@ -116,7 +112,7 @@ public class ToolsKit {
 		rfc822DateFormat.setTimeZone(new SimpleTimeZone(0, "GMT"));
 		return rfc822DateFormat;
 	}
-	
+
 	public static String getMapValue(Map<String, String> map, String key) {
 		if (map.containsKey(key)) {
 			return map.get(key);
@@ -124,4 +120,43 @@ public class ToolsKit {
 			return "";
 		}
 	}
+
+	public static String inputStream2String(InputStream is) {
+		if (isEmpty(is)){
+			throw new NullPointerException("InputStream对象不能为空");
+		}
+		StringBuilder buffer = new StringBuilder();
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new InputStreamReader(is));
+			String line = "";
+			while ((line = in.readLine()) != null) {
+				buffer.append(new String(line.getBytes(), Consts.UTF_8_ENCODING));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (in != null)
+					in.close();
+				if (is != null)
+					is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return buffer.toString();
+	}
+	
+	
+	public static byte[] toByteArray(InputStream input) throws IOException {
+	    ByteArrayOutputStream output = new ByteArrayOutputStream();
+	    byte[] buffer = new byte[4096];
+	    int n = 0;
+	    while (-1 != (n = input.read(buffer))) {
+	        output.write(buffer, 0, n);
+	    }
+	    return output.toByteArray();
+	}
+
 }

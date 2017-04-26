@@ -17,7 +17,7 @@ public class JsonKit {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static String toJson(Object valueObj) {
 		if (ToolsKit.isEmpty(valueObj))
-			throw new NullPointerException("obj is null");
+			throw new NullPointerException("valueObj is null");
 
 		if (valueObj instanceof String) {
 			return "\"" + valueObj + "\"";

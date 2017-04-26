@@ -1,38 +1,28 @@
 package com.syt.aliyun.sdk.log;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.zip.Deflater;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
 import com.syt.aliyun.sdk.common.Consts;
 import com.syt.aliyun.sdk.enums.HttpMethod;
 import com.syt.aliyun.sdk.exception.LogException;
 import com.syt.aliyun.sdk.kit.Base64Kit;
+import com.syt.aliyun.sdk.kit.HttpKit;
 import com.syt.aliyun.sdk.kit.JsonKit;
 import com.syt.aliyun.sdk.kit.ToolsKit;
 import com.syt.aliyun.sdk.log.entity.LogContent;
 import com.syt.aliyun.sdk.log.entity.LogItem;
 import com.syt.aliyun.sdk.log.entity.PutLogsRequest;
 import com.syt.aliyun.sdk.log.entity.RequestMessage;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.*;
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import java.util.zip.Deflater;
 
 public class LogClient {
 	private String httpType;
@@ -184,7 +174,7 @@ public class LogClient {
 			}
 			headers.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(body.length));
 			getSignature(this.accessId, this.accessKey, headers,resourceUri);
-			RequestMessage request = buildRequest(getHostURI(project), resourceUri, headers,new ByteArrayInputStream(body), body.length);
+			RequestMessage request = buildRequest(getHostURI(project), resourceUri, headers, body, body.length);
 			return request;
 	 }
 	 
@@ -200,13 +190,13 @@ public class LogClient {
 	 private  RequestMessage buildRequest(URI endpoint,
 				String resourceUri,
 				Map<String, String> headers,
-				InputStream content, long size) {
+				byte[] content, long size) {
 			RequestMessage request = new RequestMessage();
 			request.setMethod(HttpMethod.POST);
 			request.setEndpoint(endpoint);
 			request.setResourcePath(resourceUri);
 			request.setHeaders(headers);
-			request.setContent(content);
+		 	request.setBody(content);
 			request.setContentLength(size);
 			return request;
 		}
@@ -251,10 +241,9 @@ public class LogClient {
 	 /**
 	  * 签名
 	  * @param accessid				accessId
-	  * @param accesskey 			accesskey		
+	  * @param accesskey 			accesskey
 	  * @param headers				request headers
 	  * @param resourceUri			资源URI地址
-	  * @param urlParams				get方式时的请求参数
 	  */
 		private void getSignature(String accessid, String accesskey, Map<String, String> headers, String resourceUri) {
 			StringBuilder builder = new StringBuilder();
@@ -347,7 +336,9 @@ public class LogClient {
 				logsArray.add(jsonObjInner);
 			}
 			jsonObj.put("__logs__", logsArray);
-			
+
+//			System.out.println(JsonKit.toJson(jsonObj));
+
 			return JsonKit.toJson(jsonObj).getBytes();
 		}
 		
@@ -385,7 +376,7 @@ public class LogClient {
 		  * @param statusCode					响应状态代号
 		  * @param responseBody				返回的错误信息，如果为200是，可能为空或null
 		  * @return
-		  * @throws LoginException
+		  * @throws LogException
 		  */
 		 public boolean checkResponse(int statusCode, String responseBody) throws LogException {
 			 if(statusCode != Consts.HTTP_SUCCESS_STATUS_CODE ) {
@@ -396,4 +387,19 @@ public class LogClient {
 			 }
 			 return true;
 		 }
+
+	/**
+	 * 发送请求
+	 * @param request 		PutLogsRequest对象
+	 * @throws LogException
+	 */
+	public String exceute(PutLogsRequest request) throws LogException{
+			RequestMessage messages = getRequestMessage(request);
+			String url = messages.getEndpoint()+messages.getResourcePath();
+			try {
+				return HttpKit.duang().body(messages.getBody()).url(url).header(messages.getHeaders()).post();
+			} catch (Exception e) {
+				return e.getMessage();
+			}
+		}
 }
